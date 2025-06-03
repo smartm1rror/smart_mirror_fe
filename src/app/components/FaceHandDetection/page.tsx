@@ -1,236 +1,259 @@
+// src/app/components/FaceHandDetection/page.tsx
 "use client";
-// components/FaceHandDetection.tsx
 
-import React, { useRef, useEffect, useState } from 'react';
-import { Hands } from '@mediapipe/hands';
-import { FaceDetection } from '@mediapipe/face_detection';
-import { Camera } from '@mediapipe/camera_utils';
-import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
-import { HAND_CONNECTIONS } from '@mediapipe/hands';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
+import Webcam from 'react-webcam';
+import "@tensorflow/tfjs-core";
+import "@tensorflow/tfjs-converter";
+import "@tensorflow/tfjs-backend-webgl";
 
-interface DetectionState {
-  faceDetected: boolean;
-  handGesture: string;
-  faceCount: number;
-  handCount: number;
+interface FaceDetectionCameraProps {
+  onScreenshotTaken?: (imageSrc: string) => void;
 }
 
-const FaceHandDetection: React.FC = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
+const FaceDetectionCamera: React.FC<FaceDetectionCameraProps> = ({
+  onScreenshotTaken
+}) => {
+  const webcamRef = useRef<Webcam>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [detectionState, setDetectionState] = useState<DetectionState>({
-    faceDetected: false,
-    handGesture: '',
-    faceCount: 0,
-    handCount: 0,
-  });
+  const [faceDetected, setFaceDetected] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCountingDown, setIsCountingDown] = useState(false);
 
+  const countdownRef = useRef(0);
+  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const takeScreenshot = useCallback(() => {
+    if (webcamRef.current) {
+      const imageSrc = webcamRef.current.getScreenshot();
+      if (imageSrc) {
+        setCapturedImage(imageSrc);
+        onScreenshotTaken?.(imageSrc);
+        console.log('스크린샷 촬영 완료');
+      }
+    }
+  }, [onScreenshotTaken]);
+
+  const startCountdown = useCallback(() => {
+    if (isCountingDown) return;
+
+    let count = 3;
+    setIsCountingDown(true);
+    setCountdown(count);
+
+    const timer = setInterval(() => {
+      count--;
+      setCountdown(count);
+      console.log('카운트다운:', count);
+
+      if (count <= 0) {
+        clearInterval(timer);
+        setIsCountingDown(false);
+        takeScreenshot();
+        setFaceDetected(false);
+      }
+    }, 1000);
+
+    // 안전장치: 10초 후에는 강제로 타이머 정리
+    setTimeout(() => {
+      clearInterval(timer);
+      if (isCountingDown) {
+        setIsCountingDown(false);
+        setCountdown(0);
+      }
+    }, 10000);
+
+    return () => clearInterval(timer);
+  }, [isCountingDown, takeScreenshot]);
+
+  const resetCountdown = useCallback(() => {
+    console.log('카운트다운 리셋');
+    setCountdown(0);
+    setIsCountingDown(false);
+    countdownRef.current = 0;
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current);
+      countdownIntervalRef.current = null;
+    }
+  }, []);
+  const detectFace = useCallback(() => {
+    if (!webcamRef.current || !canvasRef.current || isCountingDown) return;
+
+    const video = webcamRef.current.video;
+    const canvas = canvasRef.current;
+
+    if (video && video.readyState === 4) {
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0);
+
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const sampleSize = 50;
+
+      try {
+        const imageData = ctx.getImageData(
+          centerX - sampleSize / 2,
+          centerY - sampleSize / 2,
+          sampleSize,
+          sampleSize
+        );
+
+        let skinPixels = 0;
+        for (let i = 0; i < imageData.data.length; i += 4) {
+          const r = imageData.data[i];
+          const g = imageData.data[i + 1];
+          const b = imageData.data[i + 2];
+
+          if (r > 95 && g > 40 && b > 20 &&
+            r > g && r > b &&
+            Math.abs(r - g) > 15) {
+            skinPixels++;
+          }
+        }
+
+        const skinRatio = skinPixels / (sampleSize * sampleSize);
+        const hasFace = skinRatio > 0.3;
+
+        if (hasFace && !faceDetected && !isCountingDown) {
+          setFaceDetected(true);
+          startCountdown();
+        } else if (!hasFace && !isCountingDown) {
+          setFaceDetected(false);
+        }
+      } catch (error) {
+        console.error('얼굴 감지 오류:', error);
+      }
+    }
+  }, [faceDetected, isCountingDown, startCountdown]);
+  
   useEffect(() => {
-    if (!videoRef.current || !canvasRef.current) return;
+    let detectInterval: NodeJS.Timeout;
 
-    const hands = new Hands({
-      locateFile: (file) => {
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
-      }
-    });
+    const startDetection = () => {
+      setIsLoading(false);
+      detectInterval = setInterval(detectFace, 300);
+    };
 
-    const faceDetection = new FaceDetection({
-      locateFile: (file) => {
-        return `https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/${file}`;
-      }
-    });
-
-    // 손 감지 설정
-    hands.setOptions({
-      maxNumHands: 2,
-      modelComplexity: 1,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5
-    });
-
-    // 얼굴 감지 설정
-    faceDetection.setOptions({
-      minDetectionConfidence: 0.5
-    });
-
-    // 손 감지 결과 처리
-    hands.onResults((results) => {
-      const canvas = canvasRef.current;
-      const ctx = canvas?.getContext('2d');
-      if (!canvas || !ctx) return;
-
-      ctx.save();
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
-
-      if (results.multiHandLandmarks) {
-        for (const landmarks of results.multiHandLandmarks) {
-          // 손 랜드마크 그리기
-          drawConnectors(ctx, landmarks, HAND_CONNECTIONS, {
-            color: '#00FF00',
-            lineWidth: 2
-          });
-          drawLandmarks(ctx, landmarks, {
-            color: '#FF0000',
-            lineWidth: 1
-          });
-
-          // 제스처 인식
-          const gesture = recognizeGesture(landmarks);
-          setDetectionState(prev => ({
-            ...prev,
-            handGesture: gesture,
-            handCount: results.multiHandLandmarks.length
-          }));
-        }
-      }
-      ctx.restore();
-    });
-
-    // 얼굴 감지 결과 처리
-    faceDetection.onResults((results) => {
-      const canvas = canvasRef.current;
-      const ctx = canvas?.getContext('2d');
-      if (!canvas || !ctx) return;
-
-      ctx.save();
-      if (results.detections) {
-        for (const detection of results.detections) {
-          // 얼굴 주변에 박스 그리기
-          const bbox = detection.boundingBox;
-          ctx.strokeStyle = '#0000FF';
-          ctx.lineWidth = 2;
-          ctx.strokeRect(
-            bbox.xCenter * canvas.width - (bbox.width * canvas.width) / 2,
-            bbox.yCenter * canvas.height - (bbox.height * canvas.height) / 2,
-            bbox.width * canvas.width,
-            bbox.height * canvas.height
-          );
-        }
-        setDetectionState(prev => ({
-          ...prev,
-          faceDetected: results.detections.length > 0,
-          faceCount: results.detections.length
-        }));
-      }
-      ctx.restore();
-    });
-
-    // 카메라 설정
-    const camera = new Camera(videoRef.current, {
-      onFrame: async () => {
-        if (videoRef.current) {
-          await hands.send({ image: videoRef.current });
-          await faceDetection.send({ image: videoRef.current });
-        }
-      },
-      width: 1280,
-      height: 720
-    });
-
-    camera.start();
+    startDetection();
 
     return () => {
-      camera.stop();
+      if (detectInterval) {
+        clearInterval(detectInterval);
+      }
     };
-  }, []);
+  }, [detectFace]);
 
-  // 제스처 인식 함수
-  const recognizeGesture = (landmarks: any[]) => {
-    const thumbTip = landmarks[4];
-    const indexTip = landmarks[8];
-    const middleTip = landmarks[12];
-    const ringTip = landmarks[16];
-    const pinkyTip = landmarks[20];
-
-    const thumbBase = landmarks[2];
-    const indexBase = landmarks[5];
-    const middleBase = landmarks[9];
-    const ringBase = landmarks[13];
-    const pinkyBase = landmarks[17];
-
-    // 손가락이 펴져있는지 확인
-    const isFingerExtended = (tip: any, base: any) => {
-      return tip.y < base.y;
-    };
-
-    // 제스처 판단
-    if (isFingerExtended(indexTip, indexBase) && 
-        isFingerExtended(middleTip, middleBase) &&
-        !isFingerExtended(ringTip, ringBase) &&
-        !isFingerExtended(pinkyTip, pinkyBase)) {
-      return "평화 ✌️";
-    }
-
-    if (isFingerExtended(indexTip, indexBase) && 
-        !isFingerExtended(middleTip, middleBase) &&
-        !isFingerExtended(ringTip, ringBase) &&
-        !isFingerExtended(pinkyTip, pinkyBase)) {
-      return "검지 들기 ☝️";
-    }
-
-    if (thumbTip.y < thumbBase.y && 
-        !isFingerExtended(indexTip, indexBase) &&
-        !isFingerExtended(middleTip, middleBase) &&
-        !isFingerExtended(ringTip, ringBase) &&
-        !isFingerExtended(pinkyTip, pinkyBase)) {
-      return "엄지 척 👍";
-    }
-
-    return "인식된 제스처 없음";
+  const retakePhoto = () => {
+    setCapturedImage(null);
+    setFaceDetected(false);
+    setCountdown(0);
+    setIsCountingDown(false);
+    countdownRef.current = 0;
+    resetCountdown();
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">카메라를 준비하는 중...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="detection-container">
-      <video
-        ref={videoRef}
-        style={{ display: 'none' }}
-      />
-      <canvas
-        ref={canvasRef}
-        width={1280}
-        height={720}
-        style={{ 
-          maxWidth: '100%',
-          maxHeight: '80vh'
-        }}
-      />
-      <div className="detection-info">
-        <h3>감지 정보</h3>
-        <p>얼굴 감지: {detectionState.faceDetected ? '감지됨' : '감지되지 않음'}</p>
-        <p>감지된 얼굴 수: {detectionState.faceCount}</p>
-        <p>감지된 손 수: {detectionState.handCount}</p>
-        <p>인식된 제스처: {detectionState.handGesture}</p>
+    <div className="max-w-2xl mx-auto p-6">
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        {!capturedImage ? (
+          <div className="relative">
+            <Webcam
+              ref={webcamRef}
+              audio={false}
+              height={480}
+              width={640}
+              screenshotFormat="image/jpeg"
+              videoConstraints={{
+                width: 640,
+                height: 480,
+                facingMode: "user"
+              }}
+              className="w-full h-auto"
+            />
+
+            <canvas
+              ref={canvasRef}
+              style={{ display: 'none' }}
+            />
+
+            <div className="absolute top-4 left-4 bg-black bg-opacity-70 text-white px-4 py-2 rounded-lg">
+              {isCountingDown ? (
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse"></div>
+                  <span>촬영 준비 중...</span>
+                  <span className="ml-2 text-xl font-bold text-yellow-400">
+                    {countdown}
+                  </span>
+                </div>
+              ) : faceDetected ? (
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                  <span>얼굴 인식됨</span>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <span>얼굴을 카메라 중앙에 맞춰주세요</span>
+                </div>
+              )}
+            </div>
+
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-32 h-32 border-2 border-white border-dashed rounded-full opacity-50"></div>
+            </div>
+
+            {countdown > 0 && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="bg-black bg-opacity-50 text-white text-6xl font-bold rounded-full w-32 h-32 flex items-center justify-center animate-pulse">
+                  {countdown}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="text-center">
+            <img
+              src={capturedImage}
+              alt="촬영된 사진"
+              className="w-full h-auto rounded-lg mb-4"
+            />
+            <button
+              onClick={retakePhoto}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors"
+            >
+              다시 촬영하기
+            </button>
+          </div>
+        )}
       </div>
 
-      <style jsx>{`
-        .detection-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 20px;
-          padding: 20px;
-        }
-
-        .detection-info {
-          background-color: #f5f5f5;
-          padding: 20px;
-          border-radius: 8px;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .detection-info h3 {
-          margin-top: 0;
-          color: #333;
-        }
-
-        .detection-info p {
-          margin: 8px 0;
-          color: #666;
-        }
-      `}</style>
+      <div className="mt-6 text-center text-gray-600">
+        <p className="text-sm">
+          📸 얼굴을 중앙 원 안에 맞추면 3초 후 자동으로 사진이 촬영됩니다
+        </p>
+        <p className="text-xs mt-2 text-gray-500">
+          * 간단한 색상 기반 얼굴 감지를 사용합니다
+        </p>
+      </div>
     </div>
   );
 };
 
-export default FaceHandDetection;
+export default FaceDetectionCamera;
