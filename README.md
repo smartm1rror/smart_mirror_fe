@@ -1,36 +1,27 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
+### Server Start
+```
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 개발 요소 
+#### 시스템 구성
+- [ ] 얼굴 인식
+    - [ ] 카메라 켜기
+    - [ ] 사용자 얼굴 인식
+        - [ ] 분석을 원하시면 3초간 가만히 있어주세요!
+- [ ] 데이터 전송
+    - [ ] 얼굴 사진 데이터 백엔드 전송
+    - [ ] 전송 후 카메라 일시 중지
+- [ ] 데이터 수신
+    - [ ] 수신된 데이터 가공
+    - [ ] 데이터 사용자에게 출력
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+#### 부가 요소
+- [ ] 기본 화면 구성
+    - [ ] 시간 (우측 상단)
+    - [ ] 날씨 (좌측 상단)
+- [ ] 디자인
+    - [ ] 얼굴 인식 과정에서 사용자 어그로
+    - [ ] 데이터 가공 중 일시적으로 대기 요청
+    - [ ] 가공 데이터는 사용자가 정보를 볼 수 있도록 표기
+    - [ ] QR코드를 보여주고 데이터 전송받을 수 있는 기능
