@@ -1,0 +1,56 @@
+import React, { useRef, useImperativeHandle, forwardRef } from "react";
+import Webcam from "react-webcam";
+
+const CAMERA_WIDTH = 640;
+const CAMERA_HEIGHT = 480;
+
+interface CameraModuleProps {
+  onCapture: (blob: Blob) => void;
+}
+
+const CameraModule = forwardRef<{ capture: () => void }, CameraModuleProps>(
+  ({ onCapture }, ref) => {
+    const webcamRef = useRef<Webcam>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    // capture 메서드를 외부 ref로 노출
+    useImperativeHandle(ref, () => ({
+      capture: () => {
+        const video = webcamRef.current?.video;
+        const canvas = canvasRef.current;
+        if (video && canvas) {
+          canvas.width = CAMERA_WIDTH;
+          canvas.height = CAMERA_HEIGHT;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(video, 0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
+            canvas.toBlob((blob) => {
+              if (blob) onCapture(blob);
+            }, "image/jpeg", 0.95);
+          }
+        }
+      }
+    }));
+
+    return (
+      <>
+        <Webcam
+          ref={webcamRef}
+          audio={false}
+          width={CAMERA_WIDTH}
+          height={CAMERA_HEIGHT}
+          screenshotFormat="image/jpeg"
+          videoConstraints={{
+            width: CAMERA_WIDTH,
+            height: CAMERA_HEIGHT,
+            facingMode: "user",
+          }}
+          style={{ width: 0, height: 0, position: "absolute", left: "-9999px" }}
+        />
+        <canvas ref={canvasRef} style={{ display: "none" }} />
+      </>
+    );
+  }
+);
+
+export default CameraModule;
