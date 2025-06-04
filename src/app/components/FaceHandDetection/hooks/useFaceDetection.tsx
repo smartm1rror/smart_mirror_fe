@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import Webcam from 'react-webcam';
 import { useInference } from '../context/InferenceContext';
 
@@ -56,7 +56,7 @@ const FaceDetectionHiddenCamera: React.FC = () => {
                 console.error('얼굴 감지 오류:', error);
             }
         }
-    }, []);
+    }, [setFaceDetected]);
 
     useEffect(() => {
         const detectInterval = setInterval(detectFace, 300);

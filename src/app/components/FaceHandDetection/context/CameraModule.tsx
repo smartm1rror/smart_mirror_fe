@@ -13,7 +13,6 @@ const CameraModule = forwardRef<{ capture: () => void }, CameraModuleProps>(
     const webcamRef = useRef<Webcam>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    // capture 메서드를 외부 ref로 노출
     useImperativeHandle(ref, () => ({
       capture: () => {
         const video = webcamRef.current?.video;
@@ -52,5 +51,8 @@ const CameraModule = forwardRef<{ capture: () => void }, CameraModuleProps>(
     );
   }
 );
+
+// displayName 추가
+CameraModule.displayName = 'CameraModule';
 
 export default CameraModule;

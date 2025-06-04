@@ -3,11 +3,23 @@
 import React, { createContext, useContext, useRef, useState, useCallback } from "react";
 import CameraModule from "./CameraModule";
 
+// 결과 데이터의 타입 정의
+interface InferenceResult {
+  // 실제 결과 데이터의 구조에 맞게 정의
+  // 예시:
+  success: boolean;
+  data?: {
+    prediction?: string;
+    confidence?: number;
+  };
+  message?: string;
+}
+
 // 타입 정의
 interface InferenceContextType {
   loading: boolean;
   error: string | null;
-  result: any;
+  result: InferenceResult | null;  // any 대신 구체적인 타입 사용
   captureAndInfer: () => void;
   faceDetected: boolean;
   setFaceDetected: React.Dispatch<React.SetStateAction<boolean>>;
@@ -18,13 +30,11 @@ const InferenceContext = createContext<InferenceContextType | undefined>(undefin
 export const InferenceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<InferenceResult | null>(null);
   const [faceDetected, setFaceDetected] = useState(false);
 
-  // CameraModule의 capture 메서드를 ref로 노출
   const cameraRef = useRef<{ capture: () => void }>(null);
 
-  // CameraModule에서 캡처된 이미지를 받으면 백엔드로 전송
   const handleCapture = useCallback(async (blob: Blob) => {
     setLoading(true);
     setError(null);
@@ -37,16 +47,19 @@ export const InferenceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         body: formData,
       });
       if (!res.ok) throw new Error("서버 오류");
-      const data = await res.json();
+      const data: InferenceResult = await res.json();  // 응답 타입 지정
       setResult(data);
-    } catch (e: any) {
-      setError(e.message || "알 수 없는 오류");
+    } catch (error: unknown) {  // any 대신 unknown 사용
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("알 수 없는 오류가 발생했습니다.");
+      }
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // 외부에서 호출: 카메라 캡처에서 handleCapture로 전달
   const captureAndInfer = useCallback(() => {
     cameraRef.current?.capture();
   }, []);
@@ -61,7 +74,6 @@ export const InferenceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       setFaceDetected
     }}>
       {children}
-      {/* CameraModule은 화면에 보이지 않게 렌더 */}
       <CameraModule
         ref={cameraRef}
         onCapture={handleCapture}
