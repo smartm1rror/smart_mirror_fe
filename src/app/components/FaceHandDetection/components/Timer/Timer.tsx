@@ -10,6 +10,7 @@ const Timer: React.FC = () => {
   const { phase, countdown } = useTimerState();
   const { aiPreprocessing } = useInference();
 
+
   return (
     <>
       {aiPreprocessing ? (

@@ -35,12 +35,11 @@ body {
 .rotating-border::before {
   content: '';
   position: absolute;
-  inset: -8px; /* 선 두께 조절 */
-  border-radius: 32px; /* 모서리 둥글게, 원형은 50% */
+  inset: -8px;
+  border-radius: 32px;
   background: conic-gradient(from 0deg, white 0deg 60deg, transparent 60deg 360deg);
-  /* 원하는 각도만큼만 흰색, 나머지는 투명 */
   animation: spin 2.5s linear infinite;
-  filter: blur(0.5px); /* 부드러운 느낌 */
+  filter: blur(0.5px);
 }
 
 @keyframes spin {
