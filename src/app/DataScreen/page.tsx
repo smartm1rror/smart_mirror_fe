@@ -49,7 +49,8 @@ export default function Page() {
     };
 
     return (
-        <div className="relative h-screen w-screen overflow-hidden bg-white">
+        <div className="relative h-screen w-screen overflow-hidden">
+            {/* 버튼 구현 부는 나중에 주석 처리 할 것 : 편의상 넣은 거임*/}
             <button
                 onClick={() => paginate(-1)}
                 className="absolute left-4 top-1/2 z-20 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-lg"
