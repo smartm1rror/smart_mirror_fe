@@ -1,7 +1,7 @@
 "use client"
 
 import { useInference } from "../../context/InferenceContext";
-import '@/app/components/FaceHandDetection/styles/idleDesign.css';
+import '@/app/FaceHandDetection/styles/idleDesign.css';
 import { useClock } from "../../hooks/idle/clock";
 import { useWeatherInfo } from "../../hooks/idle/weather";
 
