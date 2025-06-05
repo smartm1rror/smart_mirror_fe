@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useInference } from '../context/InferenceContext';
 
 export const useTimerState = () => {
-  const { faceDetected } = useInference();
+  const { faceDetected, setAiPreprocessing } = useInference();
   const [countdown, setCountdown] = useState(3);
   const [phase, setPhase] = useState<"idle" | "counting" | "done">("idle");
 
@@ -19,12 +19,13 @@ export const useTimerState = () => {
   useEffect(() => {
     if (phase !== "counting") return;
     if (countdown === 0) {
+      setAiPreprocessing(true);
       setPhase("done");
       return;
     }
     const timer = setTimeout(() => setCountdown((c) => c - 1), 1800);
     return () => clearTimeout(timer);
-  }, [phase, countdown]);
+  }, [phase, countdown, setAiPreprocessing]);
 
-  return { phase, countdown };
+  return { phase, countdown, setAiPreprocessing };
 };

@@ -96,7 +96,7 @@ const FaceDetectionHiddenCamera: React.FC = () => {
             />
 
             {/* 좌측 상단 얼굴 인식 상태 알림 */}
-            <div className="fixed top-4 left-4 bg-black bg-opacity-70 text-white px-4 py-2 rounded-lg flex items-center space-x-2 z-50">
+            <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 text-white px-4 py-2 rounded-lg flex items-center space-x-2 z-50">
                 {faceDetected ? (
                     <>
                         <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>

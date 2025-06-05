@@ -11,6 +11,7 @@ const InferenceContext = createContext<InferenceContextType | undefined>(undefin
 export const InferenceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { loading, error, result, handleCapture } = useInferenceHandler();
   const [faceDetected, setFaceDetected] = useState(false);
+  const [aiPreprocessing, setAiPreprocessing] = useState(false);
   const cameraRef = useRef<{ capture: () => void }>(null);
 
   const captureAndInfer = useCallback(() => {
@@ -23,7 +24,9 @@ export const InferenceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     result,
     captureAndInfer,
     faceDetected,
-    setFaceDetected
+    setFaceDetected,
+    aiPreprocessing,
+    setAiPreprocessing,
   }
 
   return (

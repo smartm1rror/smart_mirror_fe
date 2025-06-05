@@ -1,0 +1,37 @@
+.idle-container {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  color: #fff;
+}
+
+.top-bar {
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.left-top {
+  text-align: left;
+  font-size: 1.5rem;
+}
+
+.right-top {
+  text-align: right;
+  font-size: 1.5rem;
+}
+
+.center-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2rem;
+  font-weight: 500;
+  text-align: center;
+}
