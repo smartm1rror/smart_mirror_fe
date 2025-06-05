@@ -1,11 +1,11 @@
 "use client"
 
-import FaceHandDetection from "./FaceHandDetection/page";
+import FaceDetection from "./FaceDetection/page";
 
 export default function MainPage() {
     return (
         <div>
-            <FaceHandDetection />
+            <FaceDetection />
         </div>
     )
 }
