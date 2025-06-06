@@ -26,16 +26,16 @@ const PersonalColorPanel: React.FC<PersonalColorPanelProps> = ({
         justifyContent: 'center',
         alignItems: 'center',
         gap: '1vh', // 간격을 좁게
-        padding: '4vh 0',
+        padding: '10vh 0',
       }}>
         {colors.map((color, idx) => (
           <div
             key={idx}
             style={{
-              width: '20vw',          // 더 넓게
-              height: '10vh',         // 더 높게
+              width: '23vw',          // 더 넓게
+              height: '5.5vh',         // 더 높게
               background: color,
-              borderRadius: '0.8vw',
+              borderRadius: '0.7vw',
               boxShadow: '0 2px 16px rgba(0,0,0,0.10)'
             }}
           />
