@@ -48,12 +48,12 @@ const PersonalColorPanel: React.FC<PersonalColorPanelProps> = ({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'flex-start',
-        padding: '8vh 6vw',
+        padding: '8vh 4vw',
       }}>
         <div style={{
           fontSize: '2.5rem',
           fontWeight: 700,
-          marginBottom: '2vh',
+          marginBottom: '3vh',
           letterSpacing: '0.05em',
         }}>
           {title}
@@ -61,7 +61,7 @@ const PersonalColorPanel: React.FC<PersonalColorPanelProps> = ({
         <div style={{
           fontSize: '1.25rem',
           lineHeight: 1.7,
-          maxWidth: '30vw',
+          maxWidth: '50vw',
         }}>
           {description}
         </div>
