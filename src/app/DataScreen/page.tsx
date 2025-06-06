@@ -2,20 +2,22 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import HairPage from './hair-style/page';
 import PersonalColorPage from './personal-color/page';
 import SkinCarePage from './skin-care/page';
 import SkinDiagnosisPage from './skin-diagnosis/page';
+import QRCodePage from './qr-code/page';
+import SkinStatusPage from './skin-status/page';
 
 export default function Page() {
-    const [[page, direction], setPage] = useState([1, 0]);
+    const [[page, direction], setPage] = useState([0, 0]);
     const [isAnimating, setIsAnimating] = useState(false);
 
     const pages = [
-        <HairPage key="page" />,
-        <PersonalColorPage key="page" />,
+        <SkinStatusPage key="page" />,
         <SkinCarePage key="page" />,
-        <SkinDiagnosisPage key="page" />
+        <SkinDiagnosisPage key="page" />,
+        <PersonalColorPage key="page" />,
+        <QRCodePage key="page" />
     ];
 
     const variants = {
