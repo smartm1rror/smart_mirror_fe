@@ -1,4 +1,3 @@
-// InferenceProvider.tsx
 "use client";
 
 import React, { createContext, useContext, useRef, useState, useCallback } from "react";
@@ -9,7 +8,7 @@ import { useInferenceHandler } from "../hooks/useInferenceHandler";
 const InferenceContext = createContext<InferenceContextType | undefined>(undefined);
 
 export const InferenceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { loading, error, result, handleCapture } = useInferenceHandler();
+  const { loading, error, result, handleCapture, sendAllImages } = useInferenceHandler();
   const [faceDetected, setFaceDetected] = useState(false);
   const [aiPreprocessing, setAiPreprocessing] = useState(false);
   const cameraRef = useRef<{ capture: () => void }>(null);
@@ -27,7 +26,8 @@ export const InferenceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setFaceDetected,
     aiPreprocessing,
     setAiPreprocessing,
-  }
+    sendAllImages, // 추가
+  };
 
   return (
     <InferenceContext.Provider value={value}>

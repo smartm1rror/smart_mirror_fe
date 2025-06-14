@@ -16,12 +16,11 @@ export interface InferenceContextType {
   error: string | null;
   result: InferenceResult | null;
   captureAndInfer: () => void;
-  
   faceDetected: boolean;
-  setFaceDetected: React.Dispatch<React.SetStateAction<boolean>>;
-
+  setFaceDetected: (v: boolean) => void;
   aiPreprocessing: boolean;
-  setAiPreprocessing: React.Dispatch<React.SetStateAction<boolean>>;
+  setAiPreprocessing: (v: boolean) => void;
+  sendAllImages: () => void;
 }
 
 export interface InferenceResult {

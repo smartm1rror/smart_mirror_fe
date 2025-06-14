@@ -2,7 +2,6 @@ import { personalColorPalettes } from "./PersonalColor";
 import PersonalColorDisplay from "./personal-sidecar/PersonalSide";
 
 export default function PersonalColorPage() {
-    // 예시: spring_bright 팔레트만 가져오기
     const bright = personalColorPalettes.find(
         (palette) => palette.key === "autumn_soft"
     );
@@ -16,7 +15,8 @@ export default function PersonalColorPage() {
                 style={{
                     marginTop: "30px",
                 }}
-            >퍼스널 컬러</div>
+            >퍼스널 컬러
+            </div>
 
             <PersonalColorDisplay
                 colors={bright.colors}

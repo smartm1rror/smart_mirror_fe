@@ -1,11 +1,13 @@
 import { InferenceResult } from "../types";
 
 export class InferenceService {
-  static async handleCapture(blob: Blob): Promise<InferenceResult> {
+  static async handleBatchCapture(blobs: Blob[]): Promise<InferenceResult> {
     const formData = new FormData();
-    formData.append("image", blob, "capture.jpg");
-    
-    const response = await fetch("/api/infer", {
+    blobs.forEach((blob, idx) => {
+      formData.append("image", blob, `capture${idx + 1}.jpg`);
+    });
+
+    const response = await fetch("http://localhost:8000/api/analyze/", {
       method: "POST",
       body: formData,
     });

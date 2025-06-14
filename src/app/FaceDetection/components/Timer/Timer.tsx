@@ -1,15 +1,42 @@
 "use client"
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useTimerState } from '../../hooks/useTimerState';
 import RotatingEdgeLines from '../RotatingEdgeLines/page';
 import { timerStyles } from '../../styles/timerAnimations';
 import { useInference } from '../../context/InferenceContext';
+import { useRouter } from 'next/navigation';
 
 const Timer: React.FC = () => {
   const { phase, countdown } = useTimerState();
-  const { aiPreprocessing } = useInference();
+  const { aiPreprocessing, captureAndInfer, sendAllImages, result } = useInference();
+  const prevCountdown = useRef<number | null>(null);
 
+  useEffect(() => {
+    if (phase === "counting" && countdown > 0) {
+      if (prevCountdown.current !== countdown) {
+        captureAndInfer();
+        prevCountdown.current = countdown;
+      }
+    }
+    if (phase === "counting" && countdown === 0) {
+      sendAllImages();
+    }
+    if (phase !== "counting") {
+      prevCountdown.current = null;
+    }
+  }, [phase, countdown, captureAndInfer, sendAllImages]);
+
+
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (result) {
+      localStorage.setItem("myData", JSON.stringify(result));
+      router.push("/DataScreen");
+    }
+  }, [result, router]);
 
   return (
     <>
@@ -28,7 +55,6 @@ const Timer: React.FC = () => {
             {phase === "counting" && (
               <span className="absolute rounded-full border-8 border-blue-300 w-[40vw] h-[40vw] opacity-30 animate-resonance" />
             )}
-
             <div className="relative flex flex-col items-center" style={{ marginTop: "28vh" }}>
               {phase === "counting" ? (
                 <>
@@ -42,15 +68,11 @@ const Timer: React.FC = () => {
                     {countdown}
                   </span>
                 </>
-              ) : (
-                <></>
-              )}
+              ) : null}
             </div>
           </div>
         )
       )}
-
-
       <style jsx>{timerStyles}</style>
     </>
   );
