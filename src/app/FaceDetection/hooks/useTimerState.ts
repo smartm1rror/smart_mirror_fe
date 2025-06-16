@@ -23,7 +23,7 @@ export const useTimerState = () => {
       setPhase("done");
       return;
     }
-    const timer = setTimeout(() => setCountdown((c) => c - 1), 1800);
+    const timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
     return () => clearTimeout(timer);
   }, [phase, countdown, setAiPreprocessing]);
 
