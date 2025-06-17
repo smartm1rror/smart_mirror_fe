@@ -24,7 +24,7 @@ const HandDrawingOnly = () => {
     // 두 점 사이의 거리 계산
     const getDistance = (point1: number[], point2: number[]) => {
         return Math.sqrt(
-            Math.pow(point1[0] - point2[0], 2) + 
+            Math.pow(point1[0] - point2[0], 2) +
             Math.pow(point1[1] - point2[1], 2)
         );
     };
@@ -33,14 +33,14 @@ const HandDrawingOnly = () => {
     const getPalmSize = (landmarks: number[][]) => {
         const palmPoints = SETTINGS.PALM_BASE_POINTS.map(i => landmarks[i]);
         let maxDistance = 0;
-        
+
         for (let i = 0; i < palmPoints.length; i++) {
             for (let j = i + 1; j < palmPoints.length; j++) {
                 const distance = getDistance(palmPoints[i], palmPoints[j]);
                 maxDistance = Math.max(maxDistance, distance);
             }
         }
-        
+
         return maxDistance;
     };
 
@@ -116,6 +116,17 @@ const HandDrawingOnly = () => {
         });
     };
 
+    // 손 위치 판별
+    const isLeftOrRightHand = (landmarks: number[][], videoWidth: number) => {
+        // 손의 중심 x좌표 계산
+        const avgX = landmarks.reduce((sum, point) => sum + point[0], 0) / landmarks.length;
+        if (avgX < videoWidth / 2) {
+            console.log("right");
+        } else {
+            console.log("left");
+        }
+    };
+
     const detect = async () => {
         if (!handposeModel || !webcamRef.current || !canvasRef.current) return;
 
@@ -130,11 +141,14 @@ const HandDrawingOnly = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             const predictions = await handposeModel.estimateHands(video);
-            
+
             const validHands = predictions.filter(isValidHand);
-            
+
             if (validHands.length > 0) {
-                validHands.forEach((hand: any) => drawHand(hand, ctx));
+                validHands.forEach((hand: any) => {
+                    drawHand(hand, ctx);
+                    isLeftOrRightHand(hand.landmarks, video.videoWidth);
+                });
             }
         }
 
@@ -164,34 +178,35 @@ const HandDrawingOnly = () => {
     }, [handposeModel]);
 
     return (
-        <div className="p-4">
-            <div className="relative w-[640px] h-[480px]">
-                <Webcam
-                    ref={webcamRef}
-                    videoConstraints={{
-                        facingMode: 'user',
-                        width: 640,
-                        height: 480,
-                    }}
-                    style={{
-                        width: '100%',
-                        height: '100%',
-                        position: 'absolute',
-                        left: 0,
-                        top: 0,
-                    }}
-                />
-                <canvas
-                    ref={canvasRef}
-                    style={{
-                        width: '100%',
-                        height: '100%',
-                        position: 'absolute',
-                        left: 0,
-                        top: 0,
-                    }}
-                />
-            </div>
+        <div
+            style={{
+                position: 'fixed',
+                right: 0,
+                bottom: 0,
+                width: '1px',
+                height: '1px',
+                overflow: 'hidden',
+            }}
+        >
+            <Webcam
+                ref={webcamRef}
+                videoConstraints={{
+                    facingMode: 'user',
+                    width: 640,
+                    height: 480,
+                }}
+                style={{
+                    width: '640px',
+                    height: '480px',
+                }}
+            />
+            <canvas
+                ref={canvasRef}
+                style={{
+                    width: '640px',
+                    height: '480px',
+                }}
+            />
         </div>
     );
 };
