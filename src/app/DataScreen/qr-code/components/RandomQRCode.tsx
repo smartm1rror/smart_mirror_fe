@@ -31,10 +31,10 @@ export default function CenteredQRCode() {
         <QRCode value={randomData} size={200} />
       </div>
       <p style={{ marginTop: '20px', fontSize: '18px' }}>
-        QR코드로 찍으면 휴대폰으로 볼 수 있습니다!
+        QR코드로 찍으면 개인적으로 정보를 볼 수 있습니다!
       </p>
       <p style={{ marginTop: '10px', fontSize: '16px', color: '#cccccc' }}>
-        다음으로 넘어가면 초기 화면으로 돌아갑니다.
+        다음으로 넘길 경우 초기 화면으로 돌아갑니다.
       </p>
     </div>
   );
