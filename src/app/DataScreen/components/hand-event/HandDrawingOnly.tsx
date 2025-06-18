@@ -4,6 +4,8 @@ import * as tf from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-backend-webgl';
 import * as handpose from '@tensorflow-models/handpose';
 import Webcam from 'react-webcam';
+import { useResource } from '../../context/ResourceContext';
+import { MotionEvent } from '../../types';
 
 const SETTINGS = {
     CONFIDENCE_THRESHOLD: 0.75,
@@ -20,6 +22,18 @@ const HandDrawingOnly = () => {
     const webcamRef = useRef<Webcam>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [handposeModel, setHandposeModel] = useState<any>(null);
+
+    const { motion_event, motion_timer, setEvent, setTimer } = useResource();
+    const motionEventRef = useRef(motion_event);
+    const motionTimerRef = useRef(motion_timer);
+
+    useEffect(() => {
+        motionEventRef.current = motion_event;
+    }, [motion_event]);
+
+    useEffect(() => {
+        motionTimerRef.current = motion_timer;
+    }, [motion_timer]);
 
     // 두 점 사이의 거리 계산
     const getDistance = (point1: number[], point2: number[]) => {
@@ -121,9 +135,26 @@ const HandDrawingOnly = () => {
         // 손의 중심 x좌표 계산
         const avgX = landmarks.reduce((sum, point) => sum + point[0], 0) / landmarks.length;
         if (avgX < videoWidth / 2) {
-            console.log("right");
+            if (motionEventRef.current === MotionEvent.RIGHT) {
+                setTimer((prev) => prev + 1);
+                motionTimerRef.current += 1;
+                return;
+            }
+
+            setEvent(MotionEvent.RIGHT);
+            motionEventRef.current = MotionEvent.RIGHT;
+            setTimer(() => 1);
+            motionTimerRef.current = 1;
         } else {
-            console.log("left");
+            if (motionEventRef.current === MotionEvent.LEFT) {
+                setTimer((prev) => prev + 1);
+                motionTimerRef.current += 1;
+                return;
+            }
+            setEvent(MotionEvent.LEFT);
+            motionEventRef.current = MotionEvent.LEFT;
+            setTimer(() => 1);
+            motionTimerRef.current = 1;
         }
     };
 

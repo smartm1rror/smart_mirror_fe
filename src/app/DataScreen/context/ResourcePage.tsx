@@ -1,16 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SkinStatusPage from '../skin-status/page';
 import SkinCarePage from '../skin-care/page';
 import SkinDiagnosisPage from '../skin-diagnosis/page';
 import PersonalColorPage from '../personal-color/page';
 import QRCodePage from '../qr-code/page';
+import { useResource } from './ResourceContext';
+import { MotionEvent } from '../types';
 
 export default function ResourcePage() {
-    const [[page, direction], setPage] = useState([0, 0]);
+    const [[pageIndex, direction], setPage] = useState<[number, number]>([0, 0]);
     const [isAnimating, setIsAnimating] = useState(false);
+    const { move_page_event, setMovePageEvent } = useResource();
+
+    useEffect(() => {
+        if (move_page_event !== MotionEvent.NONE) {
+            const newDirection = move_page_event === MotionEvent.LEFT ? -1 : 1;
+            paginate(newDirection);
+            setMovePageEvent(MotionEvent.NONE);
+        }
+    }, [move_page_event]);
 
     const pages = [
         <SkinStatusPage key="page" />,
@@ -39,39 +50,51 @@ export default function ResourcePage() {
         return Math.abs(offset) * velocity;
     };
 
-    const paginate = async (newDirection: number) => {
+    const paginate = (newDirection: number) => {
         if (isAnimating) return;
 
         setIsAnimating(true);
-        const nextPage = page + newDirection;
 
-        if (nextPage >= 0 && nextPage < pages.length) {
-            setPage([nextPage, newDirection]);
+        // page는 [인덱스, 방향] 구조임
+        const currentIndex = pageIndex;
+        let nextPage = currentIndex + newDirection;
+
+        // Clamp: 범위 벗어나면 가장 가까운 값으로 고정
+        if (nextPage < 0) nextPage = 0;
+        if (nextPage >= pages.length) nextPage = pages.length - 1;
+
+        // 만약 이동이 없는 경우(같은 페이지)면 애니메이션도 안 하게 리턴
+        if (nextPage === currentIndex) {
+            setIsAnimating(false);
+            return;
         }
+
+        setPage([nextPage, newDirection]);
     };
+
 
     return (
         <div className="relative h-screen w-screen overflow-hidden">
             {/* 버튼 구현 부는 나중에 주석 처리 할 것 : 편의상 넣은 거임*/}
-            <button
+            {/* <button
                 onClick={() => paginate(-1)}
                 className="absolute left-4 top-1/2 z-20 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-lg"
-                disabled={page === 0 || isAnimating}
+                disabled={pageIndex === 0 || isAnimating}
             >
                 ←
             </button>
             <button
                 onClick={() => paginate(1)}
                 className="absolute right-4 top-1/2 z-20 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-lg"
-                disabled={page === pages.length - 1 || isAnimating}
+                disabled={pageIndex === pages.length - 1 || isAnimating}
             >
                 →
-            </button>
+            </button> */}
 
             <div className="w-full h-full">
                 <AnimatePresence initial={false} custom={direction} mode="popLayout">
                     <motion.div
-                        key={page}
+                        key={pageIndex}
                         custom={direction}
                         variants={variants}
                         initial="enter"
@@ -95,7 +118,7 @@ export default function ResourcePage() {
                         onAnimationComplete={() => setIsAnimating(false)}
                         className="w-full h-full absolute"
                     >
-                        {pages[page]}
+                        {pages[pageIndex]}
                     </motion.div>
                 </AnimatePresence>
             </div>
