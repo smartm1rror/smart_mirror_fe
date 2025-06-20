@@ -1,11 +1,16 @@
 "use client";
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import * as tf from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-backend-webgl';
 import * as handpose from '@tensorflow-models/handpose';
 import Webcam from 'react-webcam';
 import { useResource } from '../../context/ResourceContext';
 import { MotionEvent } from '../../types';
+
+interface HandPrediction {
+    landmarks: number[][];
+    handInViewConfidence: number;
+}
 
 const SETTINGS = {
     CONFIDENCE_THRESHOLD: 0.75,
@@ -21,7 +26,7 @@ const SETTINGS = {
 const HandDrawingOnly = () => {
     const webcamRef = useRef<Webcam>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [handposeModel, setHandposeModel] = useState<any>(null);
+    const [handposeModel, setHandposeModel] = useState<handpose.HandPose | null>(null);
 
     const { motion_event, motion_timer, setEvent, setTimer } = useResource();
     const motionEventRef = useRef(motion_event);
@@ -74,7 +79,7 @@ const HandDrawingOnly = () => {
     };
 
     // 손 모양이 유효한지 검증
-    const isValidHand = (prediction: any) => {
+    const isValidHand = (prediction: handpose.AnnotatedPrediction) => {
         const landmarks = prediction.landmarks;
         const palmSize = getPalmSize(landmarks);
         const fingersSpread = areFingersSpreads(landmarks);
@@ -87,7 +92,7 @@ const HandDrawingOnly = () => {
         );
     };
 
-    const drawHand = (prediction: any, ctx: CanvasRenderingContext2D) => {
+    const drawHand = (prediction: HandPrediction, ctx: CanvasRenderingContext2D) => {
         const landmarks = prediction.landmarks;
 
         // Draw palm
@@ -158,7 +163,7 @@ const HandDrawingOnly = () => {
         }
     };
 
-    const detect = async () => {
+    const detect = useCallback(async () => {
         if (!handposeModel || !webcamRef.current || !canvasRef.current) return;
 
         const video = webcamRef.current.video;
@@ -176,7 +181,7 @@ const HandDrawingOnly = () => {
             const validHands = predictions.filter(isValidHand);
 
             if (validHands.length > 0) {
-                validHands.forEach((hand: any) => {
+                validHands.forEach((hand: HandPrediction) => {
                     drawHand(hand, ctx);
                     isLeftOrRightHand(hand.landmarks, video.videoWidth);
                 });
@@ -184,7 +189,7 @@ const HandDrawingOnly = () => {
         }
 
         requestAnimationFrame(detect);
-    };
+    }, [handposeModel, isValidHand, drawHand, isLeftOrRightHand]);
 
     useEffect(() => {
         const loadModel = async () => {
@@ -206,7 +211,7 @@ const HandDrawingOnly = () => {
         if (handposeModel) {
             detect();
         }
-    }, [handposeModel]);
+    }, [handposeModel, detect]);
 
     return (
         <div
