@@ -55,7 +55,7 @@ const RotatingEdgeLines: React.FC = () => {
                 {/* 두 번째 선 */}
                 <rect
                     x={margin}
-                    y={margin}
+                    y={marginTop}
                     width={rectWidth}
                     height={rectHeight}
                     fill="none"
