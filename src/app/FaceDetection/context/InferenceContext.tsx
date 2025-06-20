@@ -13,6 +13,16 @@ export const InferenceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [aiPreprocessing, setAiPreprocessing] = useState(false);
   const cameraRef = useRef<{ capture: () => void }>(null);
 
+  // 미리보기 상태
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const handleCaptureWithPreview = useCallback((blob: Blob) => {
+    handleCapture(blob);
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    const url = URL.createObjectURL(blob);
+    setPreviewUrl(url);
+  }, [handleCapture, previewUrl]);
+
   const captureAndInfer = useCallback(() => {
     cameraRef.current?.capture();
   }, []);
@@ -26,7 +36,7 @@ export const InferenceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setFaceDetected,
     aiPreprocessing,
     setAiPreprocessing,
-    sendAllImages, // 추가
+    sendAllImages,
   };
 
   return (
@@ -34,8 +44,14 @@ export const InferenceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       {children}
       <CameraModule
         ref={cameraRef}
-        onCapture={handleCapture}
+        onCapture={handleCaptureWithPreview}
       />
+      {previewUrl && (
+        <div style={{ position: "fixed", bottom: 20, right: 20, zIndex: 9999, background: "#fff", padding: 8, border: "1px solid #ccc" }}>
+          <div>캡처 미리보기</div>
+          <img src={previewUrl} alt="미리보기" style={{ width: 160 }} />
+        </div>
+      )}
     </InferenceContext.Provider>
   );
 };

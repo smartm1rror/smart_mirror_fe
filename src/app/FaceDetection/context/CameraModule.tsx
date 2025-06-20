@@ -44,7 +44,16 @@ const CameraModule = forwardRef<{ capture: () => void }, CameraModuleProps>(
             height: CAMERA_HEIGHT,
             facingMode: "user",
           }}
-          style={{ width: 1, height: 1, position: "absolute", left: "-9999px" }}
+          style={{
+            width: 1,
+            height: 1,
+            opacity: 0,
+            position: "fixed",
+            top: 0,
+            left: 0,
+            pointerEvents: "none",
+            zIndex: -1,
+          }}
         />
         <canvas ref={canvasRef} style={{ display: "none" }} />
       </>
