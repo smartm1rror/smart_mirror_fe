@@ -15,5 +15,7 @@ export interface ResourceContextType {
 export enum MotionEvent {
     NONE = "none",
     LEFT = "left",
-    RIGHT = "right"
+    RIGHT = "right",
+    LEFT_EFFECT = "left_effect",
+    RIGHT_EFFECT = "right_effect"
 }

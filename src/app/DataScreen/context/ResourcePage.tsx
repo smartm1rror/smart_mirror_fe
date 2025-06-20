@@ -14,11 +14,20 @@ export default function ResourcePage() {
     const [[pageIndex, direction], setPage] = useState<[number, number]>([0, 0]);
     const [isAnimating, setIsAnimating] = useState(false);
     const { move_page_event, setMovePageEvent } = useResource();
+    const [edgeEffect, setEdgeEffect] = useState<"none" | "left" | "right">("none");
 
     useEffect(() => {
         if (move_page_event !== MotionEvent.NONE) {
-            const newDirection = move_page_event === MotionEvent.LEFT ? -1 : 1;
-            paginate(newDirection);
+            if (move_page_event === MotionEvent.LEFT_EFFECT) {
+                setEdgeEffect("left");
+            }
+            else if (move_page_event === MotionEvent.RIGHT_EFFECT) {
+                setEdgeEffect("right");
+            }
+            else if (move_page_event === MotionEvent.LEFT || move_page_event === MotionEvent.RIGHT) {
+                const newDirection = move_page_event === MotionEvent.LEFT ? -1 : 1;
+                paginate(newDirection);
+            }
             setMovePageEvent(MotionEvent.NONE);
         }
     }, [move_page_event]);
@@ -42,13 +51,24 @@ export default function ResourcePage() {
         exit: (direction: number) => ({
             zIndex: 0,
             x: direction < 0 ? '100%' : '-100%',
-        })
+        }),
+        shakeLeft: {
+            x: [0, 20, -10, -20, 10],
+            transition: { duration: 0.8, times: [0, 0.2, 0.4, 0.7, 1] }
+        },
+        shakeRight: {
+            x: [0, -20, 10, 20, -10],
+            transition: { duration: 0.8, times: [0, 0.2, 0.4, 0.7, 1] }
+        }
     };
+
 
     const swipeConfidenceThreshold = 10000;
     const swipePower = (offset: number, velocity: number) => {
         return Math.abs(offset) * velocity;
     };
+
+
 
     const paginate = (newDirection: number) => {
         if (isAnimating) return;
@@ -98,7 +118,13 @@ export default function ResourcePage() {
                         custom={direction}
                         variants={variants}
                         initial="enter"
-                        animate="center"
+                        animate={
+                            edgeEffect === "left"
+                                ? "shakeLeft"
+                                : edgeEffect === "right"
+                                    ? "shakeRight"
+                                    : "center"
+                        }
                         exit="exit"
                         transition={{
                             x: { type: "spring", stiffness: 500, damping: 30, duration: 0.2 },
@@ -115,7 +141,10 @@ export default function ResourcePage() {
                                 paginate(-1);
                             }
                         }}
-                        onAnimationComplete={() => setIsAnimating(false)}
+                        onAnimationComplete={() => {
+                            setIsAnimating(false);
+                            if (edgeEffect !== "none") setEdgeEffect("none");
+                        }}
                         className="w-full h-full absolute"
                     >
                         {pages[pageIndex]}

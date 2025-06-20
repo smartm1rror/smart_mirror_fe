@@ -20,11 +20,18 @@ export const ResourceProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   useEffect(() => {
-    if (motion_timer === 50) {
+    if (motion_timer === 30) {
       console.log("Motion timer reached 50 milliseconds");
+
+      if (motion_event === MotionEvent.LEFT) {
+        setMovePageEvent(MotionEvent.LEFT_EFFECT);
+      }
+      else {
+        setMovePageEvent(MotionEvent.RIGHT_EFFECT);
+      }
     }
 
-    if (motion_timer > 140) {
+    if (motion_timer > 90) {
       console.log("Motion timer reached 140 milliseconds");
       console.log("Current motion event:", motion_event);
 
