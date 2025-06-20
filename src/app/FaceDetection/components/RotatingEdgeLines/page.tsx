@@ -8,6 +8,7 @@ const RotatingEdgeLines: React.FC = () => {
 
     // 네모 여백
     const margin = 60;
+    const marginTop = 120;
     const rectWidth = width - margin * 2;
     const rectHeight = height - margin * 2;
     const perim = 2 * (rectWidth + rectHeight);
@@ -35,7 +36,7 @@ const RotatingEdgeLines: React.FC = () => {
                 {/* 첫 번째 선 */}
                 <rect
                     x={margin}
-                    y={margin}
+                    y={marginTop}
                     width={rectWidth}
                     height={rectHeight}
                     fill="none"
