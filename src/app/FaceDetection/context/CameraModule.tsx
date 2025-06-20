@@ -1,8 +1,8 @@
 import React, { useRef, useImperativeHandle, forwardRef } from "react";
 import Webcam from "react-webcam";
 
-const CAMERA_WIDTH = 640;
-const CAMERA_HEIGHT = 480;
+const CAMERA_WIDTH = 1920;
+const CAMERA_HEIGHT = 1440;
 
 interface CameraModuleProps {
   onCapture: (blob: Blob) => void;
