@@ -10,21 +10,26 @@ export const useWeatherInfo = () => {
 
   useEffect(() => {
     const fetchWeather = async () => {
-      // 실제 API 호출 예시
-      const response = await fetch(`https://api.weatherapi.com/v1/current.json?key=${process.env.WEATHER_API_KEY}&q=Changwon&lang=ko`);
-      const data = await response.json();
-      setWeather({ temp: data.current.temp_c, description: data.current.condition.text });
-
-      // 임시 더미 데이터
-      // setWeather({ temp: 25, description: '맑음' });
+      try {
+        const response = await fetch('/api/weather');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setWeather({
+          temp: data.temp,
+          description: data.description,
+        });
+      } catch (err) {
+        console.error('날씨 정보 fetch 에러:', err);
+      }
     };
 
     fetchWeather();
-
-    const intervalId = setInterval(fetchWeather, 3600000); // 1 hour
-
+    const intervalId = setInterval(fetchWeather, 3600000);
     return () => clearInterval(intervalId);
   }, []);
 
+
   return { weather };
-}
+};

@@ -15,7 +15,7 @@ export default function Idle() {
     return (
         <div>
             <div className="top-bar">
-                <div className="weather left-top">{weather?.description}</div>
+                <div className="weather left-top">{weather?.description} {weather?.temp}°C</div>
                 <div className="clock right-top">{currentTime}</div>
             </div>
 
