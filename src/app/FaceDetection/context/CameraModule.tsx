@@ -47,7 +47,7 @@ const CameraModule = forwardRef<{ capture: () => void }, CameraModuleProps>(
           style={{
             width: 1,
             height: 1,
-            opacity: 0,
+            opacity: 1,
             position: "fixed",
             top: 0,
             left: 0,
