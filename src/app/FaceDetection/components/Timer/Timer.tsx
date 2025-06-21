@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 
 const Timer: React.FC = () => {
   const { phase, countdown } = useTimerState();
-  const { aiPreprocessing, captureAndInfer, sendAllImages, result } = useInference();
+  const { aiPreprocessing, captureAndInfer, sendAllImages, result, error } = useInference();
   const prevCountdown = useRef<number | null>(null);
 
   useEffect(() => {
@@ -28,6 +28,14 @@ const Timer: React.FC = () => {
   }, [phase, countdown, captureAndInfer, sendAllImages]);
 
 
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        window.location.href = "/";
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   const router = useRouter();
 
@@ -44,9 +52,22 @@ const Timer: React.FC = () => {
         <>
           <RotatingEdgeLines />
           <div className="fixed inset-0 flex items-center justify-center z-50 select-none pointer-events-none">
-            <span className="text-5xl font-extrabold text-white drop-shadow-lg animate-gray-glow">
-              AI가 얼굴 정보를 분석하고 있어요!
-            </span>
+            {/* 만약 error가 null이 아니라면 error 메시지 출력, null이라면 그냥 로딩 중... */}
+            {error ? (
+              <span className="text-5xl font-extrabold text-white drop-shadow-lg animate-gray-glow">
+                뭔가 뒤에서 복잡한 문제가 생긴 거 같아요..
+                <br />
+                <br />
+                3초 후 메인 화면으로 돌아갑니다<br />
+                <span className="text-3xl font-semibold text-red-300">
+                  ErrorCode : {error}
+                </span>
+              </span>
+            ) : (
+              <span className="text-5xl font-extrabold text-white drop-shadow-lg animate-gray-glow">
+                AI가 얼굴 정보를 분석하고 있어요!
+              </span>
+            )}
           </div>
         </>
       ) : (

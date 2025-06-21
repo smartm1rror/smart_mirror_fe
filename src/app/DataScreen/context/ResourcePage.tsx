@@ -79,6 +79,11 @@ export default function ResourcePage() {
         const currentIndex = pageIndex;
         let nextPage = currentIndex + newDirection;
 
+        if (currentIndex === pages.length - 1 && newDirection === 1) {
+            window.location.href = "/";
+            return;
+        }
+
         // Clamp: 범위 벗어나면 가장 가까운 값으로 고정
         if (nextPage < 0) nextPage = 0;
         if (nextPage >= pages.length) nextPage = pages.length - 1;
