@@ -46,12 +46,12 @@ export const InferenceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         ref={cameraRef}
         onCapture={handleCaptureWithPreview}
       />
-      {/* {previewUrl && (
+      {previewUrl && (
         <div style={{ position: "fixed", bottom: 20, right: 20, zIndex: 9999, background: "#fff", padding: 8, border: "1px solid #ccc" }}>
           <div>캡처 미리보기</div>
           <img src={previewUrl} alt="미리보기" style={{ width: 160 }} />
         </div>
-      )} */}
+      )}
     </InferenceContext.Provider>
   );
 };
