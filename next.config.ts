@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
 
   // 또는 모든 오리진 허용 (개발 환경에서만)
   experimental: {
-    allowedDevOrigins: ['*']
+    // Add supported experimental options here if needed
   }
 };
 
