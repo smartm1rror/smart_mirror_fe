@@ -3,12 +3,12 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SkinStatusPage from '../skin-status/page';
-import SkinCarePage from '../skin-care/page';
 import SkinDiagnosisPage from '../skin-diagnosis/page';
 import PersonalColorPage from '../personal-color/page';
 import QRCodePage from '../qr-code/page';
 import { useResource } from './ResourceContext';
 import { MotionEvent } from '../types';
+import ScrollHelper from '../scrollhelper/page';
 
 export default function ResourcePage() {
     const [[pageIndex, direction], setPage] = useState<[number, number]>([0, 0]);
@@ -33,8 +33,8 @@ export default function ResourcePage() {
     }, [move_page_event]);
 
     const pages = [
+        <ScrollHelper key="page" />,
         <SkinStatusPage key="page" />,
-        <SkinCarePage key="page" />,
         <SkinDiagnosisPage key="page" />,
         <PersonalColorPage key="page" />,
         <QRCodePage key="page" />

@@ -14,6 +14,6 @@ export async function GET() {
       description: data.current?.condition?.text ?? '',
     });
   } catch (error) {
-    return NextResponse.json({ temp: null, description: '' }, { status: 500 });
+    return NextResponse.json({ temp: null, description: error }, { status: 500 });
   }
 }

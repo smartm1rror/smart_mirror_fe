@@ -9,8 +9,10 @@ export interface PersonalColorPalette {
 // 12가지 퍼스널 컬러 팔레트 데이터
 export const personalColorPalettes: PersonalColorPalette[] = [
   {
-    key: 'spring_bright',
-    name: '봄 웜톤 (Spring Bright)',
+    // key: 'spring_bright',
+    key: 'spring',
+    // name: '봄 웜톤 (Spring Bright)',
+    name: '봄 톤 (Spring Tone)',
     description:
       '맑고 밝은 느낌의 컬러가 잘 어울리는 타입입니다. 노란빛이 감도는 따뜻한 컬러, 생기 있고 경쾌한 색상이 얼굴을 더욱 화사하게 만들어줍니다. 대표 컬러는 라이트 옐로우, 코랄, 민트, 라벤더 등이 있습니다.',
     colors: [
@@ -42,8 +44,10 @@ export const personalColorPalettes: PersonalColorPalette[] = [
     ]
   },
   {
-    key: 'summer_cool',
-    name: '여름 쿨톤 (Summer Cool)',
+    // key: 'summer_cool',
+    key: 'summer',
+    // name: '여름 쿨톤 (Summer Cool)',
+    name: '여름 톤 (Summer Tone)',
     description:
       '차분하고 시원한 컬러가 어울리는 타입입니다. 블루, 라벤더, 그레이 톤이 얼굴을 부드럽고 세련되게 만들어줍니다. 대표 컬러는 라벤더, 블루, 그레이 등이 있습니다.',
     colors: [
@@ -75,8 +79,10 @@ export const personalColorPalettes: PersonalColorPalette[] = [
     ]
   },
   {
-    key: 'autumn_deep',
-    name: '가을 딥 (Autumn Deep)',
+    // key: 'autumn_deep',
+    key: 'autumn',
+    // name: '가을 딥 (Autumn Deep)',
+    name: '가을 톤 (Autumn Tone)',
     description:
       '깊고 진한 컬러가 어울리는 타입입니다. 다크 브라운, 올리브, 버건디 톤이 얼굴을 따뜻하고 고급스럽게 만들어줍니다. 대표 컬러는 다크 브라운, 올리브, 버건디 등이 있습니다.',
     colors: [
@@ -108,8 +114,10 @@ export const personalColorPalettes: PersonalColorPalette[] = [
     ]
   },
   {
-    key: 'winter_bright',
-    name: '겨울 브라이트 (Winter Bright)',
+    // key: 'winter_bright',
+    key: 'winter',
+    // name: '겨울 브라이트 (Winter Bright)',
+    name: '겨울 톤 (Winter Tone)',
     description:
       '선명하고 강렬한 컬러가 어울리는 타입입니다. 블랙, 화이트, 레드, 블루 톤이 얼굴을 뚜렷하고 세련되게 만들어줍니다. 대표 컬러는 블랙, 화이트, 레드, 블루 등이 있습니다.',
     colors: [
