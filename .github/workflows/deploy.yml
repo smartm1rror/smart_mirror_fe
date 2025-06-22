@@ -12,6 +12,10 @@ jobs:
       - name: 저장소 체크아웃
         uses: actions/checkout@v4
 
+      - name: Docker 네트워크 생성 (없으면)
+        run: |
+          docker network create smart-mirror-network || true
+
       - name: Docker 이미지 빌드
         run: |
           docker build -t my-nextjs-app .
@@ -19,6 +23,7 @@ jobs:
       - name: .env 파일 생성
         run: |
           echo "WEATHER_API_KEY=${{ secrets.WEATHER_API_KEY }}" > .env
+          echo "NEXT_PUBLIC_API_URL=http://python-ai-app:8000" >> .env
 
       - name: 실행 중인 컨테이너 중지 및 삭제 (있다면)
         run: |
@@ -29,6 +34,18 @@ jobs:
         run: |
           docker run -d \
             --name my-nextjs-app \
+            --network smart-mirror-network \
             --env-file .env \
             -p 3000:3000 \
+            --restart unless-stopped \
             my-nextjs-app
+
+      - name: 헬스체크
+        run: |
+          sleep 10
+          curl -f http://localhost:3000 || exit 1
+        continue-on-error: true
+
+      - name: 이미지 정리
+        run: |
+          docker image prune -f
