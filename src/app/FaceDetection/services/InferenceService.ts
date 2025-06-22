@@ -9,9 +9,8 @@ export class InferenceService {
 
     // local test
     // const apiUrl = "http://localhost:8000";
-    const apiUrl = "http://python-ai-app:8000";
 
-    const response = await fetch(`${apiUrl}/api/analyze/`, {
+    const response = await fetch(`/api/analyze/`, {
       method: "POST",
       body: formData,
     });
