@@ -7,7 +7,11 @@ export class InferenceService {
       formData.append("image", blob, `capture${idx + 1}.jpg`);
     });
 
-    const response = await fetch("http://localhost:8000/api/analyze/", {
+    // local test
+    // const apiUrl = "http://localhost:8000";
+    const apiUrl = "http://python-ai-app:8000";
+
+    const response = await fetch(`${apiUrl}/api/analyze/`, {
       method: "POST",
       body: formData,
     });
