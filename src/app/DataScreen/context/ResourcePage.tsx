@@ -17,6 +17,9 @@ export default function ResourcePage() {
     const [edgeEffect, setEdgeEffect] = useState<"none" | "left" | "right">("none");
 
     useEffect(() => {
+        // 애니메이션 중이면 아무 동작도 하지 않음
+        if (isAnimating) return;
+
         if (move_page_event !== MotionEvent.NONE) {
             if (move_page_event === MotionEvent.LEFT_EFFECT) {
                 setEdgeEffect("left");
@@ -30,7 +33,8 @@ export default function ResourcePage() {
             }
             setMovePageEvent(MotionEvent.NONE);
         }
-    }, [move_page_event]);
+    }, [move_page_event, isAnimating]);
+
 
     const pages = [
         <ScrollHelper key="page" />,
@@ -53,13 +57,14 @@ export default function ResourcePage() {
             x: direction < 0 ? '100%' : '-100%',
         }),
         shakeLeft: {
-            x: [0, 20, -10, -20, 10],
-            transition: { duration: 0.8, times: [0, 0.2, 0.4, 0.7, 1] }
+            x: [0, -10, 10, -10, 10, 0],
+            transition: { duration: 0.4, times: [0, 0.2, 0.4, 0.6, 0.8, 1] }
         },
         shakeRight: {
-            x: [0, -20, 10, 20, -10],
-            transition: { duration: 0.8, times: [0, 0.2, 0.4, 0.7, 1] }
+            x: [0, 10, -10, 10, -10, 0],
+            transition: { duration: 0.4, times: [0, 0.2, 0.4, 0.6, 0.8, 1] }
         }
+
     };
 
 

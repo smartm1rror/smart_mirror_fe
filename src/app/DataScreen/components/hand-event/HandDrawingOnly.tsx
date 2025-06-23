@@ -141,25 +141,25 @@ const HandDrawingOnly = () => {
         const avgX = landmarks.reduce((sum, point) => sum + point[0], 0) / landmarks.length;
         if (avgX < videoWidth / 2) {
             console.log('left hand');
-            if (motionEventRef.current === MotionEvent.RIGHT) {
-                setTimer((prev) => prev + 1);
-                motionTimerRef.current += 1;
-                return;
-            }
-
-            setEvent(MotionEvent.RIGHT);
-            motionEventRef.current = MotionEvent.RIGHT;
-            setTimer(() => 1);
-            motionTimerRef.current = 1;
-        } else {
-            console.log('right hand');
             if (motionEventRef.current === MotionEvent.LEFT) {
                 setTimer((prev) => prev + 1);
                 motionTimerRef.current += 1;
                 return;
             }
+
             setEvent(MotionEvent.LEFT);
             motionEventRef.current = MotionEvent.LEFT;
+            setTimer(() => 1);
+            motionTimerRef.current = 1;
+        } else {
+            console.log('right hand');
+            if (motionEventRef.current === MotionEvent.RIGHT) {
+                setTimer((prev) => prev + 1);
+                motionTimerRef.current += 1;
+                return;
+            }
+            setEvent(MotionEvent.RIGHT);
+            motionEventRef.current = MotionEvent.RIGHT;
             setTimer(() => 1);
             motionTimerRef.current = 1;
         }
