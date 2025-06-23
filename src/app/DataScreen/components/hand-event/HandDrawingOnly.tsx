@@ -17,7 +17,7 @@ const SETTINGS = {
     PALM_BASE_POINTS: [0, 5, 9, 13, 17], // 손바닥 기준점
     FINGER_TIPS: [4, 8, 12, 16, 20],     // 손가락 끝점
     MIN_PALM_SIZE: 40,                    // 최소 손바닥 크기
-    MAX_PALM_SIZE: 200,                   // 최대 손바닥 크기
+    MAX_PALM_SIZE: 400,                   // 최대 손바닥 크기
     MIN_FINGER_SPREAD: 25,                // 손가락 사이 최소 거리
     POINT_SIZE: 5,
     LINE_WIDTH: 2,
