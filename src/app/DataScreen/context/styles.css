@@ -1,0 +1,48 @@
+/* styles.css (또는 글로벌 스타일에 추가) */
+.slide {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.slide-enter-right {
+  transform: translateX(100%);
+}
+.slide-enter-left {
+  transform: translateX(-100%);
+}
+.slide-center {
+  transform: translateX(0%);
+}
+.slide-exit-right {
+  transform: translateX(100%);
+}
+.slide-exit-left {
+  transform: translateX(-100%);
+}
+
+.shake-left {
+  animation: shake-left 0.4s;
+}
+.shake-right {
+  animation: shake-right 0.4s;
+}
+
+@keyframes shake-left {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(10px); }
+  60% { transform: translateX(-10px); }
+  80% { transform: translateX(10px); }
+  100% { transform: translateX(0); }
+}
+@keyframes shake-right {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(10px); }
+  40% { transform: translateX(-10px); }
+  60% { transform: translateX(10px); }
+  80% { transform: translateX(-10px); }
+  100% { transform: translateX(0); }
+}
