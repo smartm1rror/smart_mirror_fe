@@ -140,6 +140,7 @@ const HandDrawingOnly = () => {
         // 손의 중심 x좌표 계산
         const avgX = landmarks.reduce((sum, point) => sum + point[0], 0) / landmarks.length;
         if (avgX < videoWidth / 2) {
+            console.log('left hand');
             if (motionEventRef.current === MotionEvent.RIGHT) {
                 setTimer((prev) => prev + 1);
                 motionTimerRef.current += 1;
@@ -151,6 +152,7 @@ const HandDrawingOnly = () => {
             setTimer(() => 1);
             motionTimerRef.current = 1;
         } else {
+            console.log('right hand');
             if (motionEventRef.current === MotionEvent.LEFT) {
                 setTimer((prev) => prev + 1);
                 motionTimerRef.current += 1;
