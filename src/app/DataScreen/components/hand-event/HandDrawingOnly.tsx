@@ -234,6 +234,7 @@ const HandDrawingOnly = () => {
                 style={{
                     width: '640px',
                     height: '480px',
+                    transform: 'rotate(180deg)',
                 }}
             />
             <canvas
