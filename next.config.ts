@@ -4,10 +4,11 @@ const nextConfig: NextConfig = {
   /* config options here */
   allowedDevOrigins: ['192.168.219.200'],
 
-  // 또는 모든 오리진 허용 (개발 환경에서만)
   experimental: {
-    // Add supported experimental options here if needed
-  }
+    serverActions: {
+      bodySizeLimit: '25mb',
+    },
+  },
 };
 
 export default nextConfig;
