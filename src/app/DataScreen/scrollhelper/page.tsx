@@ -41,73 +41,42 @@ export default function ScrollHelper() {
         AI가 데이터 분석을 완료했습니다!
       </div>
 
-      {/* 안내 영역 */}
+      {/* 안내 영역 - 페이지 자동 전환 메시지 */}
       <div style={{
         display: "flex",
-        gap: "20vw",
+        flexDirection: "column", // 세로 정렬
         alignItems: "center",
-        marginTop: "8vh"
+        marginTop: "8vh",
+        textAlign: "center"
       }}>
-        {/* 왼손 안내 */}
-        <div style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center"
-        }}>
-          <div style={{
-            width: "90px",
-            height: "90px",
-            background: "rgba(255,255,255,0.08)",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: "1.2rem",
-            animation: "handRaiseLeft 1.6s infinite alternate"
-          }}>
-            <span role="img" aria-label="왼손" style={{ fontSize: "2.5rem" }}>🖐️</span>
-          </div>
-          <div style={{ fontSize: "1.15rem", textAlign: "center" }}>
-            왼손을 들면<br />
-            <strong style={{ fontWeight: 700 }}>왼쪽 페이지로 이동</strong>
-          </div>
+        <div style={{ fontSize: "2.5rem", marginBottom: "2rem" }}>
+          잠시 후 다음 페이지로<br />자동 전환됩니다.
         </div>
-
-        {/* 오른손 안내 */}
         <div style={{
+          width: "120px",
+          height: "120px",
+          background: "rgba(255,255,255,0.08)",
+          borderRadius: "50%",
           display: "flex",
-          flexDirection: "column",
-          alignItems: "center"
+          alignItems: "center",
+          justifyContent: "center",
+          animation: "pulseEffect 1.5s infinite alternate" // 새로운 애니메이션 추가
         }}>
-          <div style={{
-            width: "90px",
-            height: "90px",
-            background: "rgba(255,255,255,0.08)",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: "1.2rem",
-            animation: "handRaiseRight 1.6s infinite alternate"
-          }}>
-            <span role="img" aria-label="오른손" style={{ fontSize: "2.5rem" }}>🖐️</span>
-          </div>
-          <div style={{ fontSize: "1.15rem", textAlign: "center" }}>
-            오른손을 들면<br />
-            <strong style={{ fontWeight: 700 }}>오른쪽 페이지로 이동</strong>
-          </div>
+          <span role="img" aria-label="화살표 아이콘" style={{ fontSize: "3.5rem" }}>➡️</span>
+        </div>
+        <div style={{
+            fontSize: "1rem",
+            marginTop: "1.5rem",
+            color: "rgba(255,255,255,0.7)"
+        }}>
         </div>
       </div>
 
-      {/* 애니메이션 keyframes */}
+      {/* 새로운 애니메이션 keyframes */}
       <style>{`
-        @keyframes handRaiseLeft {
-          0% { transform: translateY(0); }
-          100% { transform: translateY(-18px) scale(1.07); }
-        }
-        @keyframes handRaiseRight {
-          0% { transform: translateY(0); }
-          100% { transform: translateY(-18px) scale(1.07); }
+        @keyframes pulseEffect {
+          0% { transform: scale(1); opacity: 1; }
+          100% { transform: scale(1.1); opacity: 0.8; }
         }
       `}</style>
     </div>

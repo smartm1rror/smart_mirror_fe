@@ -44,7 +44,7 @@ export default function CenteredQRCode() {
         QR코드로 찍으면 개인적으로 정보를 볼 수 있습니다!
       </p>
       <p style={{ marginTop: '10px', fontSize: '16px', color: '#cccccc' }}>
-        다음으로 넘길 경우 초기 화면으로 돌아갑니다.
+        5초 후에 시작 화면으로 돌아갑니다.
       </p>
     </div>
   );
