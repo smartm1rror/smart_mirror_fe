@@ -8,21 +8,47 @@ export const useInferenceHandler = () => {
   const [result, setResult] = useState<InferenceResult | null>(null);
   const [capturedBlobs, setCapturedBlobs] = useState<Blob[]>([]);
 
-  // 1초마다 한 장씩 Blob을 배열에 저장
   const handleCapture = useCallback((blob: Blob) => {
     setCapturedBlobs(prev => [...prev, blob]);
   }, []);
 
-  // 카운트다운이 끝나면 모든 이미지를 한 번에 전송
   const sendAllImages = useCallback(async () => {
+    let imagesToSend: Blob[] = [];
+
+    if (capturedBlobs.length === 0) {
+      setError("최소 한 장 이상의 이미지가 필요합니다.");
+      return;
+    }
+
+    if (capturedBlobs.length >= 5) {
+      // 마지막 5장만 사용
+      imagesToSend = capturedBlobs.slice(-5);
+    } else {
+      // 마지막 이미지를 복사하여 5장 채움
+      const lastBlob = capturedBlobs[capturedBlobs.length - 1];
+      imagesToSend = [...capturedBlobs];
+      while (imagesToSend.length < 5) {
+        imagesToSend.push(lastBlob);
+      }
+    }
+
+    // 디버깅 로그
+    console.log("📤 전송할 이미지 수:", imagesToSend.length);
+    imagesToSend.forEach((blob, index) => {
+      console.log(`📸 Blob ${index + 1}:`, {
+        type: blob.type,
+        size: blob.size,
+      });
+    });
+
     setLoading(true);
     setError(null);
     setResult(null);
 
     try {
-      const data = await InferenceService.handleBatchCapture(capturedBlobs);
+      const data = await InferenceService.handleBatchCapture(imagesToSend);
       setResult(data);
-      setCapturedBlobs([]); // 전송 후 초기화
+      setCapturedBlobs([]); // 초기화
     } catch (error: unknown) {
       if (error instanceof Error) {
         setError(error.message);
@@ -38,8 +64,8 @@ export const useInferenceHandler = () => {
     loading,
     error,
     result,
-    handleCapture,    // 1초마다 한 장씩 저장
-    sendAllImages,    // 카운트다운 끝나면 한 번에 전송
+    handleCapture,
+    sendAllImages,
     capturedBlobs,
   };
 };
